@@ -1,61 +1,53 @@
-import React, { Component } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import AuthContext from "../utils/AuthContext"
 
-class Poll extends Component {
+function Poll(props) {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            yes: 0,
-            no: 0
-        };
+    const { user, updateUser } = useContext(AuthContext)
+    const [yes, setYes] = useState(0)
+    const [no, setNo] = useState(0)
+
+    const incrementYesCount = () => {
+        updateUser({ ...user, hasVoted: true, voteType: 'YES' })
+        setYes(yes + 1)
     }
 
-    incrementYesCount = () => {
-        this.setState({ yes: this.state.yes + 1 })
+    const incrementNoCount = () => {
+        updateUser({ ...user, hasVoted: true, voteType: 'NO' })
+        setNo(no + 1)
     }
 
-    incrementNoCount = () => {
-        this.setState({ no: this.state.no + 1 })
-    }
+    useEffect(() => {
+        console.log(user.hasVoted);
+    })
 
-    render() {
-        const { yes, no } = this.state
-        return (
-            <div className="vertical-center">
-                <h2 class="text-center">
-                    Are we confident and ready to take up this initiative?
-                </h2>
-                <div class="justify-content-between mt-4">
-                    <button class="btn btn-success mr-3" onClick={this.incrementYesCount}>YES</button>
-                    <button class="btn btn-danger ml-3" onClick={this.incrementNoCount}>NO</button>
-                </div>
-                <div class="mt-5">
+    return (
+        <div className="vertical-center">
+            <h2 className="text-center">
+                Are we confident and ready to take up this initiative?
+            </h2>
+
+            {user.isAdmin ?
+                <div className="mt-5">
                     <h4>Yes count : {yes}</h4>
                     <h4>No count : {no}</h4>
                 </div>
-            </div>
-            // <div>
-            //     <p class="text-center">
-            //         This is a Bootstrap 5 example
-            //     </p>
-            //     <div class="row justify-content-around">
-            //         <div class="col">
-            //             <button class="btn btn-success " onClick={this.yesCount}>YES</button>
-            //         </div>
-            //         <div class="col">
-            //             <button class="btn btn-danger" onClick={this.noCount}>No</button>
-            //         </div>
+                :
+                user.hasVoted ?
 
-            //     </div>
+                    <div>
+                        <h3 className="text-success mt-1">You Responded '{user.voteType}'</h3>
+                        <h2 className="text-primary mt-5">Thanks for Voting!!!</h2>
+                    </div>
+                    :
+                    <div className="justify-content-between mt-4">
+                        <button className="btn btn-success mr-3" onClick={incrementYesCount}>YES</button>
+                        <button className="btn btn-danger ml-3" onClick={incrementNoCount}>NO</button>
+                    </div>
+            }
 
-            //     <div class="mt-5">
-            //         <h4>Yes count : {yes}</h4>
-            //         <h4>No count : {no}</h4>
-            //     </div>
-
-            // </div>
-        );
-    }
+        </div>
+    );
 }
 
 export default Poll;
